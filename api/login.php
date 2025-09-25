@@ -13,10 +13,10 @@ $password = $_POST['password'] ?? '';
 // 로그인 검증
 if(isset($users[$username]) && $users[$username] === $password){
     $_SESSION['username'] = $username;
-    header("Location: index.php");
+    header("Location: /index.php");
     exit;
 }else{
     $_SESSION['error'] = "아이디 또는 비밀번호가 틀렸습니다.";
-    header("Location: login_form.php");
+    header("Location: /login_form.php");
     exit;
 }

@@ -15,6 +15,6 @@ if(!isset($_SESSION['username'])){
 </head>
 <body>
     Hello <?php echo $_SESSION['username'] ?>
-    <a href="logout.php" > Logout </a>
+    <a href="/api/logout.php" > Logout </a>
 </body>
 </html>

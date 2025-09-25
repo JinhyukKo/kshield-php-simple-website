@@ -15,13 +15,13 @@ if(isset($_SESSION["username"])){
     <?php if(isset($_SESSION['error'])): ?>
         <p style="color:red"><?= $_SESSION['error']; unset($_SESSION['error']); ?></p>
     <?php endif; ?>
-    <form action="./service/login.php" method="POST">
+    <form action="/api/login.php" method="POST">
         <label>Username:</label>
         <input type="text" name="username" required><br><br>
         <label>Password:</label>
         <input type="password" name="password" required><br><br>
         <button type="submit">Login</button>
     </form>
-    <a href="./service/register.php">Register</a>
+    <a href="register_form.php">Register</a>
 </body>
 </html>
