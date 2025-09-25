@@ -3,6 +3,8 @@ session_start();
 if(!isset($_SESSION['username'])){
     header("Location: login_form.php");
     exit;
+} else{
+    header("Location: list.php");
 }
 ?>
 
