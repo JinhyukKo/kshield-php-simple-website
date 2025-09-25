@@ -1,27 +1,66 @@
 <?php
-session_start();
-require __DIR__ . '/db.php';
+require_once 'config.php';
 
-function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $title = $_POST['title'];
+    $content = $_POST['content'];
+    $user_id = $_SESSION['user_id'];
 
-// 세션에 user_id가 있으면 사용, 없으면 user 테이블에서 첫 user_id 자동 사용
-$user_id = $_SESSION['user_id'] ?? null;
-if (!$user_id) {
-    $row = $pdo->query("SELECT user_id FROM `user` ORDER BY id ASC LIMIT 1")->fetch();
-    $user_id = $row['user_id'] ?? ''; // user 테이블 비어 있으면 '' (insert에서 에러 나면 메시지로 종료)
+    $stmt = $pdo->prepare("INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)");
+    $stmt->execute([$title, $content, $user_id]);
+    $post_id = $pdo->lastInsertId();
+
+    if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
+        if (!file_exists('uploads')) {
+            mkdir('uploads');
+        }
+
+        // 파일명 검증 없이 그대로 사용
+        $filename = $_FILES['file']['name'];
+        // 경로 조작 공격에 취약
+        move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/' . $filename);
+
+        $sql = "INSERT INTO files (post_id, filename, real_filename, file_size) values($post_id, '$filename', '{$_FILES['file']['name']}', {$_FILES['file']['size']})";
+        $pdo->query($sql);
+    }
+
+    header("Location: view.php?id=" . $post_id);
+    exit();
 }
 ?>
-<!doctype html>
-<html lang="ko">
-<head><meta charset="utf-8"><title>글쓰기</title></head>
-<body style="font-family:system-ui, sans-serif;margin:24px">
-  <a href="list.php">&larr; 목록</a>
-  <h2>글쓰기</h2>
-  <form method="post" action="insert.php">
-    <input type="hidden" name="user_id" value="<?= h($user_id) ?>">
-    <p>제목<br><input type="text" name="title" style="width:80%" required></p>
-    <p>내용<br><textarea name="content" rows="10" style="width:80%" required></textarea></p>
-    <p><button type="submit">저장</button></p>
-  </form>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>글쓰기</title>
+</head>
+<body>
+    <h1>글쓰기</h1>
+
+    <p>
+        <a href="index.php">메인</a> |
+        <a href="board.php">게시판</a>
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+        <p>
+            제목: <br>
+            <input type="text" name="title" size="50">
+        </p>
+
+        <p>
+            내용: <br>
+            <textarea name="content" rows="10" cols="60"></textarea>
+        </p>
+
+        <p>
+            파일: <br>
+            <input type="file" name="file" accept="*/*">
+        </p>
+
+        <p>
+            <input type="submit" value="작성">
+        </p>
+    </form>
 </body>
 </html>
