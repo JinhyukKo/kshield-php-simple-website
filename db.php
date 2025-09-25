@@ -2,7 +2,7 @@
 // db.php — MySQL(board_db) 연결
 $DB_HOST = '127.0.0.1';
 $DB_PORT = '3306';
-$DB_NAME = 'board_db';
+$DB_NAME = 'board';
 $DB_USER = 'root';      // ← 네 MySQL 계정으로 수정
 $DB_PASS = '';          // ← 네 MySQL 비번으로 수정
 
